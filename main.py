@@ -5,6 +5,8 @@ from src.process_data import load_and_clean_data, calculate_mean_by_weekend, rem
 from src.visualize_data import (
     with_outliers,
     without_outliers,
+    weekday_vs_weekend,
+    sensor_readings_weekend_vs_weekday,
     plot_feature_distribution, 
     plot_correlation_matrix, 
     plot_time_series, 
@@ -36,6 +38,8 @@ def main(data_file, output_dir):
     # Generate plots
     with_outliers(df_raw, output_dir)
     without_outliers(df_raw, sensors, percentile, output_dir)
+    weekday_vs_weekend(df_grouped, output_dir)
+    sensor_readings_weekend_vs_weekday(df_grouped, sensors, output_dir)
     plot_feature_distribution(df_cleaned, output_dir)
     plot_correlation_matrix(df_cleaned, output_dir)
     plot_time_series(df_cleaned, output_dir)

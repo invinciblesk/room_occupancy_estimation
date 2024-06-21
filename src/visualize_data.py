@@ -82,6 +82,53 @@ def without_outliers(df_raw, sensors, percentile, output_dir):
     plt.savefig(os.path.join(output_dir, 'without_outliers.png'))
 
 
+def weekday_vs_weekend(df_grouped, output_dir):
+    # Plot the grouped data
+    fig, axs = plt.subplots(2, 3, figsize=(15, 10))
+
+    # Define the sensor readings and their titles
+    sensor_readings = ['Mean_Temperature', 'Mean_light', 'Mean_sound', 'Mean_CO2', 'Mean_CO2_Slope', 'Mean_PIR']
+    titles = ['Mean Temperature', 'Mean Light', 'Mean Sound', 'Mean CO2', 'Mean CO2 Slope', 'Mean PIR']
+
+    # Iterate over the sensor readings and plot them
+    for i, (sensor_reading, title) in enumerate(zip(sensor_readings, titles)):
+        row = i // 3
+        col = i % 3
+        axs[row, col].bar(df_grouped.index, df_grouped[sensor_reading])
+        axs[row, col].set_title(title)
+        axs[row, col].set_xlabel('Weekend')
+        axs[row, col].set_ylabel(title)
+
+    # Adjust the layout
+    plt.tight_layout()
+
+    plt.savefig(os.path.join(output_dir, 'weekday_vs_weekend.png'))
+
+
+def sensor_readings_weekend_vs_weekday(df_grouped, sensor, output_dir):
+    """
+    Plot the mean sensor readings for weekend and weekday.
+    """
+    fig, axs = plt.subplots(2, 3, figsize=(15, 10))
+
+    # Define the sensor readings and their titles
+    sensor_readings = ['Mean_Temperature', 'Mean_light', 'Mean_sound', 'Mean_CO2', 'Mean_CO2_Slope', 'Mean_PIR']
+    titles = ['Mean Temperature', 'Mean Light', 'Mean Sound', 'Mean CO2', 'Mean CO2 Slope', 'Mean PIR']
+
+    # Iterate over the sensor readings and plot them
+    for i, (sensor_reading, title) in enumerate(zip(sensor_readings, titles)):
+        row = i // 3
+        col = i % 3
+        axs[row, col].bar(df_grouped.index, df_grouped[sensor_reading])
+        axs[row, col].set_title(title)
+        axs[row, col].set_xlabel('Weekend')
+        axs[row, col].set_ylabel(title)
+
+    # Adjust the layout
+    plt.tight_layout()
+
+    plt.savefig(os.path.join(output_dir, 'sensor_readings_weekend_vs_weekday.png'))
+
 def plot_feature_distribution(df_cleaned, output_dir):
     """
     Plot the distribution of all features in the dataframe.
