@@ -61,6 +61,16 @@ def calculate_mean_by_weekend(df_cleaned):
 
 
 def remove_outliers(df_raw):
+    """
+    Remove outliers from the dataset based on the Mahalanobis distance.
+
+    Parameters:
+    - df_raw (DataFrame): The raw DataFrame containing sensor data.
+
+    Returns:
+    - df_cleaned (DataFrame): DataFrame with outliers removed from sensor columns.
+    """
+      
     sensors = ['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp', 'S1_Light', 'S2_Light',
            'S3_Light', 'S4_Light', 'S1_Sound', 'S2_Sound', 'S3_Sound', 'S4_Sound',
            'S5_CO2', 'S5_CO2_Slope', 'S6_PIR', 'S7_PIR']

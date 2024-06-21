@@ -18,6 +18,19 @@ from src.visualize_data import (
 )
 
 def main(data_file, output_dir):
+    """
+    Main function to process and visualize room occupancy data.
+
+    Parameters:
+    - data_file (str): Path to the data file containing room occupancy data.
+    - output_dir (str): Directory to save the output plots.
+
+    Performs the following tasks:
+    1. Loads and cleans the data from the specified data file.
+    2. Removes outliers from the sensor readings.
+    3. Calculates mean sensor readings grouped by 'is_weekend'.
+    4. Generates various plots to visualize the data and analysis results.
+    """
     # Load and clean data
     df_raw = load_and_clean_data(data_file)
 

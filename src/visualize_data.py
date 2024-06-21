@@ -14,6 +14,11 @@ from scipy.spatial import distance
 def save_plot(fig, filename, output_dir):
     """
     Save the given figure to the specified directory with the given filename.
+
+    Parameters:
+    - fig (matplotlib Figure): The matplotlib Figure object to be saved.
+    - filename (str): The filename to save the plot as.
+    - output_dir (str): The directory where the plot should be saved.
     """
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -22,6 +27,10 @@ def save_plot(fig, filename, output_dir):
 def with_outliers(df_cleaned, output_dir):
     """
     Plot boxplots of sensor readings with outliers.
+
+    Parameters:
+    - df_cleaned (DataFrame): The cleaned DataFrame containing sensor readings.
+    - output_dir (str): The directory where the plot should be saved.
     """
     sensors = ['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp', 'S1_Light', 'S2_Light',
            'S3_Light', 'S4_Light', 'S1_Sound', 'S2_Sound', 'S3_Sound', 'S4_Sound',
@@ -37,6 +46,15 @@ def with_outliers(df_cleaned, output_dir):
 def without_outliers(df_raw, sensors, percentile, output_dir):
     """
     Remove outliers from sensor readings using the Mahalanobis distance and save the cleaned DataFrame to a CSV file.
+
+    Parameters:
+    - df_raw (DataFrame): The raw DataFrame containing sensor readings.
+    - sensors (list): List of sensor columns to consider for outlier removal.
+    - percentile (float): The percentile value for Mahalanobis distance threshold.
+    - output_dir (str): The directory where the cleaned DataFrame should be saved.
+    
+    Returns:
+    - df_cleaned (DataFrame): The cleaned DataFrame with outliers removed.
     """
      # Calculate the mean and covariance of the sensor data
     sensors = ['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp', 'S1_Light', 'S2_Light',
@@ -77,6 +95,13 @@ def without_outliers(df_raw, sensors, percentile, output_dir):
 
 
 def weekday_vs_weekend(df_grouped, output_dir):
+    """
+    Plot mean sensor readings for weekend vs weekday.
+
+    Parameters:
+    - df_grouped (DataFrame): Grouped DataFrame by 'is_weekend' column with mean sensor readings.
+    - output_dir (str): The directory where the plot should be saved.
+    """
     # Plot the grouped data
     fig, axs = plt.subplots(2, 3, figsize=(15, 10))
 
@@ -101,7 +126,12 @@ def weekday_vs_weekend(df_grouped, output_dir):
 
 def sensor_readings_weekend_vs_weekday(df_grouped, sensor, output_dir):
     """
-    Plot the mean sensor readings for weekend and weekday.
+    Plot mean sensor readings for weekend vs weekday.
+
+    Parameters:
+    - df_grouped (DataFrame): Grouped DataFrame by 'is_weekend' column with mean sensor readings.
+    - sensor (str): The specific sensor reading to plot.
+    - output_dir (str): The directory where the plot should be saved.
     """
     fig, axs = plt.subplots(2, 3, figsize=(15, 10))
 
@@ -126,6 +156,10 @@ def sensor_readings_weekend_vs_weekday(df_grouped, sensor, output_dir):
 def plot_feature_distribution(df_cleaned, output_dir):
     """
     Plot the distribution of all features in the dataframe.
+
+    Parameters:
+    - df_cleaned (DataFrame): The cleaned DataFrame containing features.
+    - output_dir (str): The directory where the plot should be saved.
     """
     cols = df_cleaned.columns.difference(['datetime', 'is_weekend'])
     fig, axs = plt.subplots(5, 5, figsize=(20, 20))
@@ -139,6 +173,10 @@ def plot_feature_distribution(df_cleaned, output_dir):
 def plot_correlation_matrix(df_cleaned, output_dir):
     """
     Plot the correlation matrix of numeric features in the dataframe.
+
+    Parameters:
+    - df_cleaned (DataFrame): The cleaned DataFrame containing numeric features.
+    - output_dir (str): The directory where the plot should be saved.
     """
     # Select numeric columns for correlation matrix
     numeric_cols = df_cleaned.select_dtypes(include=np.number).columns
@@ -156,6 +194,10 @@ def plot_correlation_matrix(df_cleaned, output_dir):
 def plot_time_series(df_cleaned, output_dir):
     """
     Plot the time series of all features in the dataframe.
+
+    Parameters:
+    - df_cleaned (DataFrame): The cleaned DataFrame containing time series data.
+    - output_dir (str): The directory where the plot should be saved.
     """
     fig, ax = plt.subplots(figsize=(14, 8))
     df_cleaned.set_index('datetime').plot(ax=ax)
@@ -166,6 +208,10 @@ def plot_time_series(df_cleaned, output_dir):
 def plot_boxplots(df_cleaned, output_dir):
     """
     Plot boxplots of each feature against the room occupancy count.
+
+    Parameters:
+    - df_cleaned (DataFrame): The cleaned DataFrame containing features and room occupancy.
+    - output_dir (str): The directory where the plot should be saved.
     """
     features = df_cleaned.columns.difference(['datetime', 'is_weekend'])
     ncols = 2
@@ -190,6 +236,10 @@ def plot_boxplots(df_cleaned, output_dir):
 def plot_autocorrelation(df_cleaned, output_dir):
     """
     Plot the autocorrelation of all mean variables and save it.
+
+    Parameters:
+    - df_cleaned (DataFrame): The cleaned DataFrame containing mean variables.
+    - output_dir (str): The directory where the plot should be saved.
     """
     
     # Calculate autocorrelation of all mean variables
@@ -212,6 +262,10 @@ def plot_autocorrelation(df_cleaned, output_dir):
 def plot_pairplot(df_cleaned, output_dir):
     """
     Plot pair plots of temperature readings from sensors S1, S2, S3, and S4.
+
+    Parameters:
+    - df_cleaned (DataFrame): The cleaned DataFrame containing sensor readings.
+    - output_dir (str): The directory where the plot should be saved.
     """
     fig = sns.pairplot(df_cleaned[['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp']])
     fig.fig.suptitle('Pair Plot of Temperature Readings from Sensors S1, S2, S3, and S4', y=1.02)
@@ -220,6 +274,10 @@ def plot_pairplot(df_cleaned, output_dir):
 def plot_mean_sensor_readings_vs_occupancy(df_cleaned, output_dir):
     """
     Plot mean sensor readings against room occupancy count, with polynomial fit.
+
+    Parameters:
+    - df_cleaned (DataFrame): The cleaned DataFrame containing sensor readings and room occupancy.
+    - output_dir (str): The directory where the plot should be saved.
     """
     features = ['Mean_Temperature', 'Mean_light', 'Mean_sound', 'Mean_CO2']
 
@@ -277,7 +335,11 @@ def plot_mean_sensor_readings_vs_occupancy(df_cleaned, output_dir):
 
 def plot_correlation_matrix_sensors(df_cleaned, output_dir):
     """
-    Plot the correlation matrix of the sensor readings.
+    Plot the correlation matrix of sensor readings.
+
+    Parameters:
+    - df_cleaned (DataFrame): The cleaned DataFrame containing sensor readings.
+    - output_dir (str): The directory where the plot should be saved.
     """
     sensors_cols = ['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp',
                     'S1_Light', 'S2_Light', 'S3_Light', 'S4_Light',
