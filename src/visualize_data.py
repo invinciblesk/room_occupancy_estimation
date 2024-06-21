@@ -7,6 +7,7 @@ from scipy.optimize import curve_fit
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 from pandas.plotting import autocorrelation_plot
+from scipy.spatial import distance
 
 # Your existing code ...
 
@@ -17,6 +18,69 @@ def save_plot(fig, filename, output_dir):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     fig.savefig(os.path.join(output_dir, filename))
+
+def with_outliers(df_cleaned, output_dir):
+    """
+    Plot boxplots of sensor readings with outliers.
+    """
+    sensors = ['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp', 'S1_Light', 'S2_Light',
+           'S3_Light', 'S4_Light', 'S1_Sound', 'S2_Sound', 'S3_Sound', 'S4_Sound',
+           'S5_CO2', 'S5_CO2_Slope', 'S6_PIR', 'S7_PIR']
+
+    fig, axs = plt.subplots(len(sensors) // 2, 2, figsize=(12, 12))
+
+    for i, sensor in enumerate(sensors):
+        row = i // 2
+        col = i % 2
+        axs[row, col].boxplot(df_cleaned[sensor].dropna())
+        axs[row, col].set_title(f"Boxplot of {sensor}")
+
+    plt.suptitle("With Outliers")
+    plt.tight_layout()
+    save_plot(fig, 'with_outliers.png', output_dir)
+
+
+def without_outliers(df_raw, sensors, percentile, output_dir):
+    """
+    Remove outliers from sensor readings using the Mahalanobis distance and save the cleaned DataFrame to a CSV file.
+    """
+     # Calculate the mean and covariance of the sensor data
+    sensors = ['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp', 'S1_Light', 'S2_Light',
+       'S3_Light', 'S4_Light', 'S1_Sound', 'S2_Sound', 'S3_Sound', 'S4_Sound',
+       'S5_CO2', 'S5_CO2_Slope', 'S6_PIR', 'S7_PIR']
+
+# Select only the sensor columns
+    df_sensors = df_raw[sensors]
+    mean = df_sensors[sensors].mean()
+    cov = df_sensors[sensors].cov()
+
+    # Calculate the Mahalanobis distance of each data point
+    distances = df_sensors[sensors].apply(lambda row: distance.mahalanobis(row, mean, np.linalg.inv(cov)), axis=1)
+
+    # Define a threshold for the Mahalanobis distance
+    threshold = np.percentile(distances, 2)
+
+    # Create a mask for the outliers
+    mask = distances < threshold
+
+    # Remove the outliers from the sensor columns
+    df_cleaned = df_raw.copy()
+    df_cleaned.loc[~mask, sensors] = np.nan
+
+    # Plot boxplot for visualization
+    fig, axs = plt.subplots(len(sensors) // 2, 2, figsize=(12, 12))
+
+    for i, sensor in enumerate(sensors):
+        row = i // 2
+        col = i % 2
+        axs[row, col].boxplot(df_cleaned[sensor].dropna())
+        axs[row, col].set_title(f"Boxplot of {sensor}")
+
+    plt.suptitle("Without Outliers")
+    plt.tight_layout()
+    # Save the plot
+    plt.savefig(os.path.join(output_dir, 'without_outliers.png'))
+
 
 def plot_feature_distribution(df_cleaned, output_dir):
     """
@@ -84,15 +148,22 @@ def plot_boxplots(df_cleaned, output_dir):
 
 def plot_autocorrelation(df_cleaned, output_dir):
     """
-    Plot the autocorrelation of the mean temperature and save it.
+    Plot the autocorrelation of all mean variables and save it.
     """
     
-    # Calculate autocorrelation of the mean temperature
-    fig, ax = plt.subplots(figsize=(12, 6))
-    autocorrelation_plot(df_cleaned['Mean_Temperature'], ax=ax)
-    ax.set_title('Autocorrelation of Mean Temperature') 
-    ax.set_xlabel('Lag')
-    ax.set_ylabel('Autocorrelation')
+    # Calculate autocorrelation of all mean variables
+    mean_columns = [col for col in df_cleaned.columns if 'Mean' in col]
+
+    plt.figure(figsize=(10,5))
+
+    for col in mean_columns:
+        autocorrelation_plot(df_cleaned[col].dropna().tolist(), label=col)
+
+    plt.xlabel('Lag')
+    plt.ylabel('Autocorrelation')
+    plt.title('Autocorrelation Plot of Mean Variables')
+    plt.legend(loc='upper right')
+
     # Save the plot to output_dir
     fig = plt.gcf()  # Get the current figure
     save_plot(fig, 'autocorrelation.png', output_dir)

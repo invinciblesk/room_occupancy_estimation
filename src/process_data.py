@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from scipy.spatial import distance
 
 def load_and_clean_data(filepath):
     """
@@ -13,12 +14,11 @@ def load_and_clean_data(filepath):
     """
     # Load the raw data
     df_raw = pd.read_csv(filepath)
-
+    
     # Combine date and time columns into a datetime column
     if 'Date' in df_raw.columns and 'Time' in df_raw.columns:
-        df_raw['datetime_str'] = df_raw['Date'] + ' ' + df_raw['Time']
-        df_raw['datetime'] = pd.to_datetime(df_raw['datetime_str'])
-        df_raw.drop(columns=['Date', 'Time', 'datetime_str'], inplace=True)
+        df_raw['datetime'] = pd.to_datetime(df_raw['Date'] + ' ' + df_raw['Time'])
+        df_raw.drop(columns=['Date', 'Time'], inplace=True)
 
     # Reorder columns to have 'datetime' as the first column
     cols = list(df_raw.columns)
@@ -42,9 +42,6 @@ def load_and_clean_data(filepath):
     df_cleaned.loc[:, 'Mean_CO2_Slope'] = co2_slope_mean
     df_cleaned.loc[:, 'Mean_PIR'] = pir_mean
 
-    # Create a new column 'is_weekend' based on day of the week
-    df_cleaned.loc[:, 'is_weekend'] = np.where(df_cleaned['datetime'].dt.dayofweek < 5, 'Weekday', 'Weekend')
-
     return df_cleaned
 
 def calculate_mean_by_weekend(df_cleaned):
@@ -57,5 +54,36 @@ def calculate_mean_by_weekend(df_cleaned):
     Returns:
     - df_grouped (DataFrame): DataFrame with mean values grouped by 'is_weekend'.
     """
+    # Create a new column 'is_weekend' based on day of the week
+    df_cleaned.loc[:, 'is_weekend'] = np.where(df_cleaned['datetime'].dt.dayofweek < 5, 'Weekday', 'Weekend')
     df_grouped = df_cleaned.groupby('is_weekend').mean()
     return df_grouped
+
+
+def remove_outliers(df_raw):
+    sensors = ['S1_Temp', 'S2_Temp', 'S3_Temp', 'S4_Temp', 'S1_Light', 'S2_Light',
+           'S3_Light', 'S4_Light', 'S1_Sound', 'S2_Sound', 'S3_Sound', 'S4_Sound',
+           'S5_CO2', 'S5_CO2_Slope', 'S6_PIR', 'S7_PIR']
+
+    # Select only the sensor columns
+    df_sensors = df_raw[sensors]
+
+
+    # Calculate the mean and covariance of the sensor data
+    mean = df_sensors.mean()
+    cov = df_sensors.cov()
+
+    # Calculate the Mahalanobis distance of each data point
+    distances = df_sensors.apply(lambda row: distance.mahalanobis(row, mean, np.linalg.inv(cov)), axis=1)
+
+    # Define a threshold for the Mahalanobis distance
+    threshold = np.percentile(distances, 2)  # Adjust this value as needed
+
+    # Create a mask for the outliers
+    mask = distances < threshold
+
+    # Remove the outliers from the sensor columns
+    df_cleaned = df_raw.copy()
+    df_cleaned.loc[~mask, sensors] = np.nan
+
+    return df_cleaned
