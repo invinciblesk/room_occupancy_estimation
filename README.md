@@ -33,6 +33,7 @@ Download and unzip [Dataset source](https://archive.ics.uci.edu/dataset/608/traf
 
 4. **Run the Main Script**
     ```sh
+    python main.py --help
     python src/main.py --data data/Occupancy_Estimation.csv --output output/
     ```
 

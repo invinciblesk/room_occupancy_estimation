@@ -63,7 +63,13 @@ def main(data_file, output_dir):
     plot_correlation_matrix_sensors(df_cleaned, output_dir)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process and visualize room occupancy data.')
+    parser = argparse.ArgumentParser(
+        description='Room Occupancy Estimation: Process and visualize sensor data to estimate room occupancy.',
+        epilog='''Example usage:
+        python main.py --data data/Occupancy_Estimation.csv --output output/
+        This script processes the provided sensor data to estimate room occupancy and generates various plots to visualize the data and analysis results.''',
+        formatter_class=argparse.RawTextHelpFormatter
+    )
     parser.add_argument('--data', required=True, help='Path to the data file.')
     parser.add_argument('--output', required=True, help='Directory to save the output plots.')
     
