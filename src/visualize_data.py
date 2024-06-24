@@ -38,6 +38,12 @@ def with_outliers(df_cleaned, output_dir):
 
     fig, axs = plt.subplots(len(sensors) // 2, 2, figsize=(12, 12))
 
+    for i, sensor in enumerate(sensors):
+        row = i // 2
+        col = i % 2
+        axs[row, col].boxplot(df_cleaned[sensor].dropna())
+        axs[row, col].set_title(f"Boxplot of {sensor}")
+
     plt.suptitle("With Outliers")
     plt.tight_layout()
     save_plot(fig, 'with_outliers.png', output_dir)

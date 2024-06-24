@@ -117,9 +117,7 @@ We aim to identify optimal environmental conditions that promote comfort and pro
 
 ![Pairplot](output/pairplot.png)
 
-#### Weekday vs. Weekend Effects
-
-We examine how sensor readings vary between weekdays and weekends and if there are significant differences in occupancy or environmental factors.
+#### Correlation matrix
 
 We also investigate if there are redundant sensors based on correlation analysis.
 
